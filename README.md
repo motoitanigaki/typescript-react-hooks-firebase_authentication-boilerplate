@@ -12,7 +12,7 @@ This is sample project of user management by using the elements below.
 
 ## To run the project
 
-1. Create a new firebase authentication project and rewrite config in ./firebase.ts
+1. Create a new firebase authentication project and rewrite config in ./src/firebase.ts
 2. As this project is built with React, you can run the by the command below.
 
 ```

@@ -1,18 +1,17 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect } from "react";
 
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
+import { AuthContext } from "../Auth";
 import auth from "../firebase";
 
 const Home = (props: any) => {
-  const [currentUser, setCurrentUser] = useState<null | object>(null);
+  const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
     // if not logged in, redirect to login page
-    auth.onAuthStateChanged(user => {
-      user ? setCurrentUser(user) : props.history.push("/login");
-    });
-  }, []);
+    currentUser === null && props.history.push("/login");
+  }, [currentUser]);
 
   return (
     <Fragment>

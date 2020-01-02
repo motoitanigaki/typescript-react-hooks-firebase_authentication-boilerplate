@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 
 import {
   Button,
@@ -10,18 +10,18 @@ import {
   Typography
 } from "@material-ui/core";
 
+import { AuthContext } from "../Auth";
 import auth from "../firebase";
 
 const Signup = (props: any) => {
+  const { currentUser } = useContext(AuthContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
     // if logged in, redirect to home
-    auth.onAuthStateChanged(user => {
-      user && props.history.push("/");
-    });
-  }, []);
+    currentUser && props.history.push("/");
+  }, [currentUser]);
 
   return (
     <Fragment>

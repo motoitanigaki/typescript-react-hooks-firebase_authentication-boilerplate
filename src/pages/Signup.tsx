@@ -1,26 +1,27 @@
-import React, { Fragment, useEffect, useState, useContext } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import {
   Button,
   Container,
   FormControl,
   Grid,
-  TextField,
   Link,
+  TextField,
   Typography
 } from "@material-ui/core";
 
 import auth from "../firebase";
-import { AuthContext } from "./Auth";
 
 const Signup = (props: any) => {
-  const { currentUser } = useContext(AuthContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
-    currentUser && props.history.push("/");
-  }, [currentUser]);
+    // if logged in, redirect to home
+    auth.onAuthStateChanged(user => {
+      user && props.history.push("/");
+    });
+  }, []);
 
   return (
     <Fragment>
@@ -58,10 +59,10 @@ const Signup = (props: any) => {
             <FormControl fullWidth>
               <Button
                 fullWidth
-                onClick={async event => {
+                onClick={async () => {
                   try {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    // (firebase.auth()).sendSignInLinkToEmail(email, actionCodeSettings); このタイミングで認証メールを送ることも可能
+                    // mail for e-mail address verification can be sent here by using sendSignInLinkToEmail()
                     props.history.push("/login");
                   } catch (error) {
                     alert(error.message);

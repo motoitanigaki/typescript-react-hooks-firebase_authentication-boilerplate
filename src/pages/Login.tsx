@@ -1,26 +1,27 @@
-import React, { Fragment, useEffect, useState, useContext } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import {
   Button,
   Container,
   FormControl,
   Grid,
-  TextField,
   Link,
+  TextField,
   Typography
 } from "@material-ui/core";
 
 import auth from "../firebase";
-import { AuthContext } from "./Auth";
 
 const Login = (props: any) => {
-  const { currentUser } = useContext(AuthContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
-    currentUser && props.history.push("/");
-  }, [currentUser]);
+    // if logged in, redirect to home
+    auth.onAuthStateChanged(user => {
+      user && props.history.push("/");
+    });
+  }, []);
 
   return (
     <Fragment>
@@ -58,12 +59,9 @@ const Login = (props: any) => {
             <FormControl fullWidth>
               <Button
                 fullWidth
-                onClick={async event => {
+                onClick={async () => {
                   try {
-                    const user = await auth.signInWithEmailAndPassword(
-                      email,
-                      password
-                    );
+                    await auth.signInWithEmailAndPassword(email, password);
                     props.history.push("/");
                   } catch (error) {
                     alert(error.message);

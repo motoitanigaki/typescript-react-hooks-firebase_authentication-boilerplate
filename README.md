@@ -8,7 +8,7 @@ This is sample project of user management by using the elements below.
 
 ## Demo
 
-![demo](https://github.com/motoitanigaki/typescript-react-hooks-firebase_authentication-sample/demo/demo.gif)
+![demo](https://github.com/motoitanigaki/typescript-react-hooks-firebase_authentication-sample/blob/master/demo/demo.gif)
 
 ## To run the project
 

@@ -5,10 +5,12 @@ This is sample project of user management by using the elements below.
 - React
 - React Hooks
 - Material UI
+- Formik
+- Yup
 
 ## Demo
 
-![demo](https://github.com/motoitanigaki/typescript-react-hooks-firebase_authentication-sample/blob/master/demo/demo.gif)
+![demo](https://github.com/motoitanigaki/typescript-react-hooks-firebase_authentication-sample/blob/master/demo/demo2.gif)
 
 ## To run the project
 

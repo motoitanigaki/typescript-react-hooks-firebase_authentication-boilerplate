@@ -1,4 +1,7 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import { Field, Form, Formik } from "formik";
+import { TextField } from "formik-material-ui";
+import React, { Fragment, useContext, useEffect } from "react";
+import * as Yup from "yup";
 
 import {
   Button,
@@ -6,17 +9,24 @@ import {
   FormControl,
   Grid,
   Link,
-  TextField,
-  Typography
+  Typography,
+  LinearProgress
 } from "@material-ui/core";
 
 import { AuthContext } from "../Auth";
 import auth from "../firebase";
 
+export const AuthSchema = Yup.object().shape({
+  email: Yup.string()
+    .email()
+    .required(),
+  password: Yup.string()
+    .min(6)
+    .required()
+});
+
 const Signup = (props: any) => {
   const { currentUser } = useContext(AuthContext);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
     // if logged in, redirect to home
@@ -29,53 +39,62 @@ const Signup = (props: any) => {
         <Grid container>
           <Grid item md={4}></Grid>
           <Grid item md={4}>
-            <FormControl margin="normal" fullWidth>
-              <TextField
-                style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
-                name="email"
-                label="E-mail"
-                fullWidth
-                variant="outlined"
-                value={email}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setEmail(event.target.value);
-                }}
-              />
-            </FormControl>
-            <FormControl fullWidth>
-              <TextField
-                style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
-                name="password"
-                label="Password"
-                fullWidth
-                variant="outlined"
-                type="password"
-                value={password}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setPassword(event.target.value);
-                }}
-              />
-            </FormControl>
-            <FormControl fullWidth>
-              <Button
-                fullWidth
-                onClick={async () => {
-                  try {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                    // mail for e-mail address verification can be sent here by using sendSignInLinkToEmail()
-                    props.history.push("/login");
-                  } catch (error) {
-                    alert(error.message);
-                  }
-                }}
-                style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
-              >
-                Sign up
-              </Button>
-              <Typography align="center">
-                <Link href="/login">to login</Link>
-              </Typography>
-            </FormControl>
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validationSchema={AuthSchema}
+              onSubmit={async value => {
+                try {
+                  await auth.createUserWithEmailAndPassword(
+                    value.email,
+                    value.password
+                  );
+                  // mail for e-mail address verification can be sent here by using sendSignInLinkToEmail()
+                  props.history.push("/login");
+                } catch (error) {
+                  alert(error.message);
+                }
+              }}
+              render={({ submitForm, isSubmitting, isValid }) => (
+                <Form>
+                  {isSubmitting && <LinearProgress />}
+                  <FormControl margin="normal" fullWidth>
+                    <Field
+                      style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+                      name="email"
+                      label="E-mail"
+                      fullWidth
+                      variant="outlined"
+                      component={TextField}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <Field
+                      style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+                      name="password"
+                      label="Password"
+                      fullWidth
+                      variant="outlined"
+                      type="password"
+                      component={TextField}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <Button
+                      fullWidth
+                      onClick={submitForm}
+                      style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+                      type="submit"
+                      disabled={!isValid || isSubmitting}
+                    >
+                      Sign up
+                    </Button>
+                    <Typography align="center">
+                      <Link href="/login">to login</Link>
+                    </Typography>
+                  </FormControl>
+                </Form>
+              )}
+            />
           </Grid>
           <Grid item md={4}></Grid>
         </Grid>

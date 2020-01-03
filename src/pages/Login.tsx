@@ -1,22 +1,23 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import { Field, Form, Formik } from "formik";
+import { TextField } from "formik-material-ui";
+import React, { Fragment, useContext, useEffect } from "react";
 
 import {
   Button,
   Container,
   FormControl,
   Grid,
+  LinearProgress,
   Link,
-  TextField,
   Typography
 } from "@material-ui/core";
 
 import { AuthContext } from "../Auth";
 import auth from "../firebase";
+import { AuthSchema } from "./Signup";
 
 const Login = (props: any) => {
   const { currentUser } = useContext(AuthContext);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
     // if logged in, redirect to home
@@ -29,52 +30,61 @@ const Login = (props: any) => {
         <Grid container>
           <Grid item md={4}></Grid>
           <Grid item md={4}>
-            <FormControl margin="normal" fullWidth>
-              <TextField
-                style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
-                name="email"
-                label="E-mail"
-                fullWidth
-                variant="outlined"
-                value={email}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setEmail(event.target.value);
-                }}
-              />
-            </FormControl>
-            <FormControl fullWidth>
-              <TextField
-                style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
-                name="password"
-                label="Password"
-                fullWidth
-                variant="outlined"
-                type="password"
-                value={password}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setPassword(event.target.value);
-                }}
-              />
-            </FormControl>
-            <FormControl fullWidth>
-              <Button
-                fullWidth
-                onClick={async () => {
-                  try {
-                    await auth.signInWithEmailAndPassword(email, password);
-                    props.history.push("/");
-                  } catch (error) {
-                    alert(error.message);
-                  }
-                }}
-                style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
-              >
-                Login
-              </Button>
-            </FormControl>
-            <Typography align="center">
-              <Link href="/signup">to signup</Link>
-            </Typography>
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validationSchema={AuthSchema}
+              onSubmit={async value => {
+                try {
+                  await auth.signInWithEmailAndPassword(
+                    value.email,
+                    value.password
+                  );
+                  props.history.push("/");
+                } catch (error) {
+                  alert(error.message);
+                }
+              }}
+              render={({ submitForm, isSubmitting, isValid }) => (
+                <Form>
+                  {isSubmitting && <LinearProgress />}
+                  <FormControl margin="normal" fullWidth>
+                    <Field
+                      style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+                      name="email"
+                      label="E-mail"
+                      fullWidth
+                      variant="outlined"
+                      component={TextField}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <Field
+                      style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+                      name="password"
+                      label="Password"
+                      fullWidth
+                      variant="outlined"
+                      type="password"
+                      component={TextField}
+                    />
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <Button
+                      fullWidth
+                      onClick={submitForm}
+                      style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+                      type="submit"
+                      disabled={!isValid || isSubmitting}
+                    >
+                      Log in
+                    </Button>
+                    <Typography align="center">
+                      <Link href="/signup">to signup</Link>
+                    </Typography>
+                  </FormControl>
+                </Form>
+              )}
+            />
           </Grid>
           <Grid item md={4}></Grid>
         </Grid>
